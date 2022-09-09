@@ -1,6 +1,15 @@
 <div class="row content mt-3">
     <div class="col-sm-3 sidenav">
-      <h4>Inbox</h4>
+      <h4>Message Board</h4>
+      <br>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search Message..">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" type="button">
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+        </span>
+      </div>
     </div>
 
     <div class="col-sm-9">

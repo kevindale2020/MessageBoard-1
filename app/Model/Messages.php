@@ -11,6 +11,17 @@ class Messages extends AppModel {
         'Users' => array(
             'className' => 'Users',
             'foreignKey' => 'user_id'
-        )
+        ),
+
+        'Recipients' => array(
+            'className' => 'Users',
+            'foreignKey' => 'recipient'
+        ),
+
+        
+        'Comments' => array(
+           'className' => 'Comments',
+           'foreignKey' => 'id'
+        ),
     );
 }

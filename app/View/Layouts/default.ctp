@@ -83,6 +83,9 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <!-- 	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script> -->
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js" type="text/javascript"></script>
 <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -93,8 +96,20 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<script type="text/javascript">
 		$(document).ready(function(){
 
+			var counter = 5;
+			var counterComments = 5;
+
+			$('#btnShowMore').hide();
+			$('#btnShowMore2').hide();
+
 			<?php if($logged_in): ?>
 				getProfile();
+				getRecipients();
+				getMessageLists();
+
+				<?php if(isset($message['Messages']['id'])): ?>
+					getComments();
+				<?php endif;?>
 			<?php endif;?>
 			
 			$('#registerForm').submit(function(e){
@@ -363,6 +378,16 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
 	                    	$('#messageModal').modal('hide');
 
+	                    	getRecipients();
+
+	                    	$('#recipient').select2({
+
+													templateResult: recipientStyles,
+													dropdownParent: $('#messageModal')
+												});
+
+	                    	getMessageLists();
+
 	                    }
 	                },
 	                error: function(jqXHR, status, error) {
@@ -370,10 +395,340 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	                  console.log(error);
 	                }
 	            });
-			});  
+			});
+
+
+			function recipientStyles (selection) {
+			  if (!selection.id) { return selection.text; }
+		    var thumb = $(selection.element).data('thumb');
+		    if(!thumb){
+		      return selection.text;
+		    } else {
+		      var $selection = $(
+		    '<span><img src="<?php echo $this->webroot;?>img/' + thumb + '" width="32" height="32" class="img-flag" alt=""><span class="img-changer-text">' + $(selection.element).text() + '</span>'
+		  );
+  		return $selection;
+  		}
+		};
+
+		$('#recipient').select2({
+
+			templateResult: recipientStyles,
+			dropdownParent: $('#messageModal')
+		});
+
+		$('#commentForm').submit(function(e){
+
+			e.preventDefault();
+
+			var content = $('#content').val();
+
+			if(content=='') {
+				alert('This is required');
+			}
+
+			$.ajax({
+				url: '<?php echo $this->Html->url('/home/comment');?>',
+				method: 'POST',
+				async: false,
+				data: new FormData(this),
+				contentType: false,
+				processData: false,
+				success: function(data) {
+
+					var data = JSON.parse(data);
+
+					if(data.success==1) {
+						alert(data.message);
+						$('#commentForm')[0].reset();
+						getComments();
+					}
+
+				},
+				error: function(jqXHR, error, status) {
+
+					console.log(error);
+					console.log(status);
+				}
+			});
+		});
+
+		$('#btnShowMore').click(function(){
+
+			counter = counter + 5;
+
+			$.ajax({
+
+				url: '<?php echo $this->Html->url('/home/getmessagelists2');?>',
+				method: 'POST',
+				async: false,
+				data: {
+					messages2: 1,
+					counter: counter
+				},
+				success: function(data) {
+
+					var data = JSON.parse(data);
+
+					data = data['lists'];
+
+					var result = "";
+
+					if(data.length > 0) {
+
+						for(var i=0; i<data.length; i++) {
+
+							result+="<h2 class='mt-3'><a class='text-body' href='<?php echo $this->Html->url('/home/details/');?>"+data[i]['Messages']['id']+"'>"+data[i]['Messages']['title']+"</a></h2>";
+							result+="<span class='text text-danger pull-right delete_message' id="+data[i]['Messages']['id']+"><i class='fa fa-trash-o' aria-hidden='true'></i></span>";
+							result+="<h5><i class='fa fa-clock-o' aria-hidden='true'></i> Posted by "+data[i]['Users']['name']+", "+moment(data[i]['Messages']['posted']).format('MMMM Do YYYY, h:mm a')+"</h5>";
+							result+=" <h5><span class='badge badge-dark'>"+data[i]['Recipients']['name']+"</span></h5><br>";
+							result+="<p>"+data[i]['Messages']['body']+"</p>";
+
+						}
+					} else {
+
+						result+="<p class='text-muted'>No messages</p>";
+					}
+
+					$('#messages').html(result);
+
+					
+				}
+			});
+		});
+
+		$('#btnShowMore2').click(function(){
+
+			counterComments = counterComments + 5;
+
+			<?php if(isset($message['Messages']['id'])): ?>
+
+				var id = <?php echo $message['Messages']['id'];?>
+
+				$.ajax({
+					url: '<?php echo $this->Html->url('/home/getcomments2');?>',
+					method: 'POST',
+					async: false,
+					data: {
+						id: id,
+						counterComments: counterComments
+					},
+					success: function(data) {
+
+						var data = JSON.parse(data);
+
+						if(data.success==1) {
+							$('#comments').html(data['results']);
+						}
+					}
+				});
+			<?php endif; ?>
+		});
+
+		$('#btnSearch').click(function(){
+
+			var searchStr = $('#searchStr').val();
+
+			if(searchStr=='') {
+				alert('This is required');
+			}
+
+			$.ajax({
+				url: '<?php echo $this->Html->url('/home/searchcmessage');?>',
+				method: 'POST',
+				async: false,
+				data: {
+					search: 1,
+					searchStr: searchStr
+				},
+				success: function(data) {
+
+					var data = JSON.parse(data);
+
+					if(data['size'] > 5) {
+
+						$('#btnShowMore').show();
+					} else {
+
+						$('#btnShowMore').hide();
+					}
+
+					data = data['lists'];
+
+					var result = "";
+
+					if(data.length > 0) {
+
+						for(var i=0; i<data.length; i++) {
+
+							result+="<h2 class='mt-3'><a class='text-body' href='<?php echo $this->Html->url('/home/details/');?>"+data[i]['Messages']['id']+"'>"+data[i]['Messages']['title']+"</a></h2>";
+							result+="<span class='text text-danger pull-right delete_message' id="+data[i]['Messages']['id']+"><i class='fa fa-trash-o' aria-hidden='true'></i></span>";
+							result+="<h5><i class='fa fa-clock-o' aria-hidden='true'></i> Posted by "+data[i]['Users']['name']+", "+moment(data[i]['Messages']['posted']).format('MMMM Do YYYY, h:mm a')+"</h5>";
+							result+=" <h5><span class='badge badge-dark'>"+data[i]['Recipients']['name']+"</span></h5><br>";
+							result+="<p>"+data[i]['Messages']['body']+"</p>";
+
+						}
+					} else {
+
+						result+="<p class='text-muted'>No results found</p>";
+					}
+
+					$('#messages').html(result);
+				}
+			});
+
+		});
+
+		$(document).on('click', '.delete_message', function(){
+
+			var id = $(this).attr('id');
+
+			
+			if(confirm('Are you sure you want to delete this message?')) {
+
+                $.ajax({
+                  url: '<?php echo $this->Html->url('/home/delete');?>',
+                  method: 'POST',
+                  async: false,
+                  data: {
+                    id: id
+                  },
+                  success: function(data) {
+
+                  	  var data = JSON.parse(data);
+                  	  
+                  	  if(data.success==1) {
+
+                  	  	alert(data.message);
+
+                  	  	getMessageLists();
+                  	  }
+                 }
+                });
+            } else {
+              return false;
+       }
+		});
 
             
 		});
+
+		function getComments() {
+
+			<?php if(isset($message['Messages']['id'])): ?>
+
+				var id = <?php echo $message['Messages']['id'];?>
+
+				$.ajax({
+					url: '<?php echo $this->Html->url('/home/getcomments');?>',
+					method: 'POST',
+					async: false,
+					data: {
+						id: id
+					},
+					success: function(data) {
+
+						var data = JSON.parse(data);
+
+						if(data['size'] > 5) {
+
+						$('#btnShowMore2').show();
+						} else {
+
+						$('#btnShowMore2').hide();
+						}
+
+						if(data.success==1) {
+							$('#comments').html(data['results']);
+						}
+					}
+				});
+			<?php endif; ?>
+
+
+		}
+
+		function getMessageLists() {
+
+			var str = "";
+			var newStr= "";
+
+			$.ajax({
+
+				url: '<?php echo $this->Html->url('/home/getmessagelists');?>',
+				method: 'POST',
+				async: false,
+				data: {
+					messages: 1
+				},
+				success: function(data) {
+
+					var data = JSON.parse(data);
+
+					if(data['size'] > 5) {
+
+						$('#btnShowMore').show();
+					} else {
+
+						$('#btnShowMore').hide();
+					}
+
+					data = data['lists'];
+
+					var result = "";
+
+					if(data.length > 0) {
+
+						for(var i=0; i<data.length; i++) {
+
+							str = data[i]['Messages']['body'];
+
+							if(str.length > 565) {
+								newStr = str.substring(0, 565) + '...';
+							} else {
+								newStr = str;
+							}
+
+							result+="<h2 class='mt-3'><a class='text-body' href='<?php echo $this->Html->url('/home/details/');?>"+data[i]['Messages']['id']+"'>"+data[i]['Messages']['title']+"</a></h2>";
+								result+="<span class='text text-danger pull-right delete_message' id="+data[i]['Messages']['id']+"><i class='fa fa-trash-o' aria-hidden='true'></i></span>";
+							result+="<h5><i class='fa fa-clock-o' aria-hidden='true'></i> Posted by "+data[i]['Users']['name']+", "+moment(data[i]['Messages']['posted']).format('MMMM Do YYYY, h:mm a')+"</h5>";
+							result+=" <h5><span class='badge badge-dark'>"+data[i]['Recipients']['name']+"</span></h5><br>";
+							result+="<p>"+newStr+"</p>";
+
+						}
+					} else {
+
+						result+="<p class='text-muted'>No messages</p>";
+					}
+
+					$('#messages').html(result);
+
+					
+				}
+			});
+		}
+
+		function getRecipients() {
+
+			$.ajax({
+
+				url: '<?php echo $this->Html->url('/home/getrecipients');?>',
+				method: 'POST',
+				async: false,
+				data: {
+					recipients: 1
+				},
+				success: function(data) {
+
+					var data = JSON.parse(data);
+
+					if(data.success==1) {
+
+						$('#recipients').html(data['recipients']);
+					}
+				}
+			});
+		}
 
 		function getProfile() {
 
@@ -401,10 +756,12 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 					$('#p_name').html(data['Users']['name']);
 					$('#p_email').html(data['Users']['email']);
 					if(data['Users']['birthdate']!='0000-00-00') {
-						$('#p_bdate').html(data['Users']['birthdate']);
+						$('#p_bdate').html(moment(data['Users']['birthdate']).format('MMMM DD YYYY'));
 					}
 					$('#p_gender').html(data['Users']['gender']);
 					$('#p_hobby').html(data['Users']['hobby']);
+					$('#p_created').html(moment(data['Users']['created']).format('MMMM Do YYYY, h:mm a'));
+					$('#p_modified').html(moment(data['Users']['modified']).format('MMMM Do YYYY, h:mm a'));
 
 
 					$('#ep_name').val(data['Users']['name']);

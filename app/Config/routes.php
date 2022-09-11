@@ -48,6 +48,24 @@
 
     Router::connect('/home/newmessage', array('controller' => 'home', 'action' => 'newMessage'));
 
+    Router::connect('/home/getrecipients', array('controller' => 'home', 'action' => 'getRecipients'));
+
+    Router::connect('/home/getmessagelists', array('controller' => 'home', 'action' => 'getMessageLists'));
+
+    Router::connect('/home/getmessagelists2', array('controller' => 'home', 'action' => 'getMessageLists2'));
+
+    Router::connect('/home/details/:id', array('controller' => 'home', 'action' => 'details'), array('pass' => array('id')));
+
+    Router::connect('/home/comment', array('controller' => 'home', 'action' => 'comment'));
+
+    Router::connect('/home/getcomments', array('controller' => 'home', 'action' => 'getComments'));
+
+    Router::connect('/home/getcomments2', array('controller' => 'home', 'action' => 'getComments2'));
+
+    Router::connect('/home/searchcmessage', array('controller' => 'home', 'action' => 'searchMessage'));
+
+    Router::connect('/home/delete', array('controller' => 'home', 'action' => 'delete'));
+
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on

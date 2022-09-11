@@ -70,6 +70,24 @@
                                                 
                                             </div>
                                         </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label style="font-weight:bold;">Created</label>
+                                            </div>
+                                            <div class="col-md-8 col-6" id="p_created">
+                                                
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label style="font-weight:bold;">Modified</label>
+                                            </div>
+                                            <div class="col-md-8 col-6" id="p_modified">
+                                                
+                                            </div>
+                                        </div>
 
                                     </div>
                                     <div class="tab-pane fade" id="connectedServices" role="tabpanel" aria-labelledby="ConnectedServices-tab">

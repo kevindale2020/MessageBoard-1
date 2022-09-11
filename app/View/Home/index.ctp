@@ -3,9 +3,9 @@
       <h4>Message Board</h4>
       <br>
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search Message..">
+        <input type="text" id="searchStr" name="searchStr" class="form-control" placeholder="Search Message..">
         <span class="input-group-btn">
-          <button class="btn btn-primary" type="button">
+          <button class="btn btn-primary" type="button" id="btnSearch">
             <i class="fa fa-search" aria-hidden="true"></i>
           </button>
         </span>
@@ -16,21 +16,15 @@
       <h4><small>MESSAGE LISTS</small></h4>
       <hr>
       <button class="btn btn-success pull-right" id="btnNew">New Message</button><br/>
-      <h2 class="mt-3">I Love Food</h2>
+      <div id="messages"></div>
+      <button class="btn btn-dark" id="btnShowMore">Show More</button>
+     <!--  <h2 class="mt-3">I Love Food</h2>
       <h5><span class="glyphicon glyphicon-time"></span> Post by Jane Dane, Sep 27, 2015.</h5>
       <h5><span class="label label-danger">Food</span> <span class="label label-primary">Ipsum</span></h5><br>
       <p>Food is my passion. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      <br><br>
-      
-      <h4><small>RECENT POSTS</small></h4>
-      <hr>
-      <h2>Officially Blogging</h2>
-      <h5><span class="glyphicon glyphicon-time"></span> Post by John Doe, Sep 24, 2015.</h5>
-      <h5><span class="label label-success">Lorem</span></h5><br>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      <hr>
+      <br><br> -->
 
-      <h4>Leave a Comment:</h4>
+   <!--    <h4>Leave a Comment:</h4>
       <form role="form">
         <div class="form-group">
           <textarea class="form-control" rows="3" required></textarea>
@@ -69,7 +63,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 
@@ -89,7 +83,7 @@
             <form id="messageForm">
           <div class="mb-3 mt-3">
             <label for="recipient">Recipient:</label>
-            <input type="text" class="form-control" id="recipient" placeholder="Enter recipient" name="recipient">
+            <div id="recipients"></div>
           </div>
           <div class="mb-3 mt-3">
             <label for="title">Title:</label>

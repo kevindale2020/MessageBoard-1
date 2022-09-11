@@ -42,6 +42,11 @@ class Users extends AppModel {
 	    'Messages' => array(
 	       'className' => 'Messages',
 	       'foreignKey' => 'id'
-	    )
+	    ),
+
+	    'Comments' => array(
+	       'className' => 'Comments',
+	       'foreignKey' => 'id'
+	    ),
   	);
 }
